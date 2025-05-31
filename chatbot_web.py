@@ -1,14 +1,24 @@
 import streamlit as st
 import chromadb
-from openai import OpenAI
-from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
 import datetime
 import pandas as pd
 import os
+from dotenv import load_dotenv
+from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
 
 # === 1. Cấu hình ban đầu ===
+load_dotenv()  # Tải các biến môi trường từ file .env
+
 persist_dir = "./vector_store"
-openai_api_key = "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"
+openai_api_key = os.getenv("OPENAI_API_KEY")  # Đọc API key từ biến môi trường
+
+# Khởi tạo hàm nhúng
+embedding_function = OpenAIEmbeddingFunction(api_key=openai_api_key, model_name="text-embedding-ada-002")
+
+# Khởi tạo client và collection
+client = chromadb.PersistentClient(path=persist_dir)
+collection = client.get_collection("thu_tuc_hanh_chinh", embedding_function=embedding_function)
+
 embedding_function = OpenAIEmbeddingFunction(api_key=openai_api_key, model_name="text-embedding-ada-002")
 client = chromadb.PersistentClient(path=persist_dir)
 collection = client.get_collection("thu_tuc_hanh_chinh", embedding_function=embedding_function)
