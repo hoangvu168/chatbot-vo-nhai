@@ -1,11 +1,14 @@
 import os
 import openai
 import chromadb
+from dotenv import load_dotenv
 from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
 
-# ====== 1. CẤU HÌNH ======
-openai.api_key = "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"
-data_folder = "E:\chatbotmoi\ data_txt"  # Đảm bảo không có khoảng trắng thừa
+# ====== 1. TẢI BIẾN MÔI TRƯỜNG TỪ FILE .env ======
+load_dotenv()
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+data_folder = "E:/chatbotmoi/data_txt"  # Đã xóa khoảng trắng thừa
 persist_dir = "./vector_store"
 
 # ====== 2. TẠO EMBEDDING FUNCTION ======
@@ -40,14 +43,12 @@ def read_documents(folder_path):
     return documents
 
 # ====== 6. LỌC DỮ LIỆU MỚI CHƯA CÓ ======
-# Lấy danh sách ID đã có trong collection
 existing_ids = set()
 try:
     existing_ids = set(collection.get()["ids"])
 except:
     pass
 
-# Đọc và lọc tài liệu chưa có
 all_docs = read_documents(data_folder)
 new_docs = [doc for doc in all_docs if doc["id"] not in existing_ids]
 
